@@ -139,11 +139,11 @@
   .client-bar h3 span{color:var(--slate-dim);font-style:italic;font-weight:300;font-size:1.1rem;margin-left:10px}
   .client-bar .count{font-size:.78rem;color:var(--slate-dim);letter-spacing:1px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
-  .vcard{position:relative;border-radius:var(--r);overflow:hidden;background:var(--bg-2);
+  .vcard{position:relative;border-radius:var(--r);overflow:hidden;background:var(--bg-2);text-decoration:none;color:inherit;
     border:1px solid var(--line-soft);box-shadow:var(--shadow);cursor:pointer;
     transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .35s}
   .vcard:hover{transform:translateY(-6px);border-color:var(--line)}
-  .vthumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-1)}
+  .vthumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-1);display:block;text-decoration:none;color:inherit}
   .vthumb img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease,filter .5s;filter:saturate(.92) contrast(1.02)}
   .vcard:hover .vthumb img{transform:scale(1.06);filter:saturate(1.05)}
   .vthumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.05),rgba(7,11,18,.55))}
@@ -1899,10 +1899,11 @@ function attachThumbs(scope){
     img.addEventListener('load',function(){ if(img.naturalWidth<=120){img.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';}});
   });
 }
+function ytWatch(id){ return `https://www.youtube.com/watch?v=${id}`; }
 function vcard(v){
-  return `<div class="vcard" data-id="${v.id}">
+  return `<a class="vcard" href="${ytWatch(v.id)}" target="_blank" rel="noopener" data-id="${v.id}" aria-label="Assistir ${v.title} no YouTube">
     <div class="vthumb"><img data-yt="${v.id}" loading="lazy" alt="${v.title}"><div class="play">${PLAY}</div></div>
-    <div class="vmeta"><div class="tag">${v.tag}</div><div class="ttl">${v.title}</div></div></div>`;
+    <div class="vmeta"><div class="tag">${v.tag}</div><div class="ttl">${v.title}</div></div></a>`;
 }
 
 // Favoritos — cards no tema (abrem o Reel no Instagram)
@@ -1960,7 +1961,7 @@ document.getElementById('clients').innerHTML = clients.map(c=>{
 
 // Feature + autorais
 document.getElementById('feature').innerHTML = `
-  <div class="vthumb" data-id="${feature.id}"><img data-yt="${feature.id}" alt="${feature.title}"><div class="play">${PLAY}</div></div>
+  <a class="vthumb" href="${ytWatch(feature.id)}" target="_blank" rel="noopener" data-id="${feature.id}" aria-label="Assistir ${feature.title} no YouTube"><img data-yt="${feature.id}" alt="${feature.title}"><div class="play">${PLAY}</div></a>
   <div class="feature-cap"><div class="t">${feature.title}</div><div class="s">${feature.sub}</div></div>`;
 document.getElementById('autorais-grid').innerHTML = autorais.map(vcard).join('');
 
@@ -1981,12 +1982,8 @@ document.addEventListener('click',e=>{
   if(tb){ const block=tb.closest('.shorts-block'); const open=block.classList.toggle('open');
     tb.querySelector('.lbl').textContent=open?'Ver menos':'Ver mais Shorts';
     if(!open) block.scrollIntoView({behavior:'smooth',block:'nearest'}); return; }
-  const card=e.target.closest('.vcard');
-  if(card){ playInline(card.querySelector('.vthumb')); return; }
-  const fth=e.target.closest('#feature .vthumb');
-  if(fth){ playInline(fth); return; }
   const short=e.target.closest('[data-short]');
-  if(short){ e.preventDefault(); playInline(short, true); }
+  if(short){ e.preventDefault(); window.open(ytWatch(short.dataset.id), '_blank', 'noopener'); }
 });
 
 /* ============ NAV / REVEAL / SNOW ============ */
