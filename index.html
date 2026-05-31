@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabriel Arouca — Social Media & Editor de Vídeo</title>
-<meta name="description" content="Gabriel Arouca - Social Media & Editor de Vídeo especializado em conteúdo digital. Edição para YouTube, Reels e projetos autorais.">
+<meta name="description" content="Gabriel Arouca | Social Media & Editor de Vídeo especializado em conteúdo digital. Edição para YouTube, Reels e projetos autorais.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -554,6 +554,142 @@
 </style>
 <!-- ===== FIM DO PATCH RESPONSIVO MOBILE ===== -->
 
+
+<style>
+/* ===== PATCH MOBILE MENU + SHORTS COMPACTOS ===== */
+@media (max-width: 820px) {
+  nav {
+    align-items: center;
+  }
+
+  .menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(12, 22, 38, .72);
+    backdrop-filter: blur(12px);
+    color: var(--snow);
+    font-size: 1.35rem;
+    line-height: 1;
+    z-index: 80;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 64px;
+    left: 14px;
+    right: 14px;
+    z-index: 70;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(8, 13, 22, .94);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.9);
+    opacity: 0;
+    transform: translateY(-10px) scale(.98);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
+  }
+
+  .nav-links.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: var(--snow);
+    font-size: .92rem;
+  }
+
+  .nav-links a:hover {
+    background: var(--frost-strong);
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-cta {
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Shorts menores no celular: vira uma grade compacta, não cartaz gigante */
+  .shorts-block .vstrip {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .short-card {
+    border-radius: 13px !important;
+    box-shadow: 0 18px 45px -28px rgba(2,8,20,.9);
+  }
+
+  .short-tag {
+    top: 8px !important;
+    left: 8px !important;
+    font-size: .48rem !important;
+    letter-spacing: .6px !important;
+  }
+
+  .short-tag svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .short-play {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .short-play svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .short-meta {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+  }
+
+  .short-meta .t {
+    font-size: .68rem !important;
+    line-height: 1.05;
+  }
+
+  .short-meta .s {
+    display: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .shorts-block .vstrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+/* ===== FIM PATCH MOBILE MENU + SHORTS ===== */
+</style>
+
 </head>
 <body>
 <div class="atmo"></div>
@@ -570,7 +706,7 @@
     <a href="#autorais">Projetos</a>
     <a href="#contato" class="nav-cta">Contato</a>
   </div>
-  <button class="menu-btn" id="menuBtn">☰</button>
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false">☰</button>
 </nav>
 
 <div class="wrap">
@@ -873,7 +1009,29 @@ for(let i=0;i<24;i++){const s=document.createElement('span');
   s.style.opacity=Math.random()*.5+.15;const d=Math.random()*12+10;
   s.style.animationDuration=d+'s';s.style.animationDelay=-Math.random()*d+'s';snow.appendChild(s);}
 
-document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('contato').scrollIntoView({behavior:'smooth'}));
+const menuBtn=document.getElementById('menuBtn');
+const navLinks=document.querySelector('.nav-links');
+if(menuBtn && navLinks){
+  const closeMenu=()=>{
+    navLinks.classList.remove('open');
+    document.body.classList.remove('menu-open');
+    menuBtn.setAttribute('aria-expanded','false');
+    menuBtn.textContent='☰';
+  };
+  menuBtn.addEventListener('click',()=>{
+    const open=navLinks.classList.toggle('open');
+    document.body.classList.toggle('menu-open',open);
+    menuBtn.setAttribute('aria-expanded',String(open));
+    menuBtn.textContent=open?'×':'☰';
+  });
+  navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape') closeMenu();});
+  document.addEventListener('click',e=>{
+    if(!navLinks.classList.contains('open')) return;
+    if(navLinks.contains(e.target) || menuBtn.contains(e.target)) return;
+    closeMenu();
+  });
+}
 
 // efeito 3D + glare na foto do hero
 (function(){
